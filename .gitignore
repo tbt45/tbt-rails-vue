@@ -10,18 +10,38 @@
 # Ignore all logfiles and tempfiles.
 /log/*
 /tmp/*
+backend/log/*
+backend/tmp/*
+frontend/log/*
+frontend/tmp/*
 !/log/.keep
 !/tmp/.keep
+!backend/log/.keep
+!backend/tmp/.keep
+!frontend/log/.keep
+!frontend/tmp/.keep
 
 # Ignore pidfiles, but keep the directory.
 /tmp/pids/*
+backend/tmp/pids/*
+frontend/tmp/pids/*
 !/tmp/pids/.keep
+!backend/tmp/pids/.keep
+!frontend/tmp/pids/.keep
 
 # Ignore uploaded files in development.
 /storage/*
-!/storage/.keep
 /tmp/storage/*
+backend/storage/*
+backend/tmp/storage/*
+frontend/storage/*
+frontend/tmp/storage/*
+!/storage/.keep
 !/tmp/storage/.keep
+!backend/storage/.keep
+!backend/tmp/storage/.keep
+!frontend/storage/.keep
+!frontend/tmp/storage/.keep
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
