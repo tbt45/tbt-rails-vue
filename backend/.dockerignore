@@ -1,0 +1,13 @@
+.git
+.gitignore
+.env
+.env.local
+.DS_Store
+*.log
+tmp
+vendor/bundle
+node_modules
+log/*
+tmp/*
+!.gitkeep
+
