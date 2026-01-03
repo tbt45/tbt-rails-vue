@@ -130,7 +130,9 @@ const onSubmit = async () => {
     // JWTトークンはレスポンスヘッダーから取得
     const authHeader = response.headers.get('Authorization')
     const jwtToken = authHeader?.replace('Bearer ', '') || null
-    const data = await response.json()
+    
+    // $fetch.rawの場合は、_dataプロパティからデータを取得
+    const data = (response as any)._data || await response.json()
 
     if (data?.status?.code === 200) {
       await login(data.data, jwtToken || undefined)

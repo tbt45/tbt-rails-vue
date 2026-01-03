@@ -5,11 +5,23 @@ module Api
         before_action :configure_sign_in_params, only: [:create]
 
         def create
-          self.resource = warden.authenticate!(auth_options)
+          email = params[:user][:email]
+          password = params[:user][:password]
           
-          if resource
-            respond_with(resource)
+          # ユーザーを検索
+          user = User.find_by(email: email)
+          
+          if user && user.valid_password?(password)
+            # JWTトークンを生成
+            token = Warden::JWTAuth::UserEncoder.new.call(user, :user, nil)
+            
+            # レスポンスヘッダーにJWTトークンを追加
+            response.headers['Authorization'] = "Bearer #{token}"
+            
+            # 認証成功
+            respond_with(user)
           else
+            # 認証失敗
             render json: {
               status: { code: 401, message: 'Invalid email or password.' }
             }, status: :unauthorized
