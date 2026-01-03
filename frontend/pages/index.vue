@@ -8,14 +8,22 @@
               <h1 class="text-3xl font-bold text-gray-900">
                 Welcome to TBT Rails
               </h1>
-              <UButton
-                v-if="!user"
-                to="/login"
-                color="primary"
-                variant="solid"
-              >
-                ログイン
-              </UButton>
+              <div v-if="!user" class="flex gap-2">
+                <UButton
+                  to="/login"
+                  color="primary"
+                  variant="solid"
+                >
+                  ログイン
+                </UButton>
+                <UButton
+                  to="/signup"
+                  color="gray"
+                  variant="outline"
+                >
+                  ユーザー登録
+                </UButton>
+              </div>
               <UButton
                 v-else
                 @click="handleLogout"
