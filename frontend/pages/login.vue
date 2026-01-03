@@ -114,7 +114,7 @@ const onSubmit = async () => {
     const apiUrl = config.public.apiBaseUrl
     
     // useFetchを使用してヘッダーも取得
-    const { data, response } = await useFetch<{
+    const response = await $fetch.raw<{
       status: { code: number; message: string }
       data: User
     }>(`${apiUrl}/api/v1/auth/sign_in`, {
@@ -128,11 +128,12 @@ const onSubmit = async () => {
     })
 
     // JWTトークンはレスポンスヘッダーから取得
-    const authHeader = response.value?.headers.get('Authorization')
+    const authHeader = response.headers.get('Authorization')
     const jwtToken = authHeader?.replace('Bearer ', '') || null
+    const data = await response.json()
 
-    if (data.value?.status?.code === 200) {
-      await login(data.value.data, jwtToken || undefined)
+    if (data?.status?.code === 200) {
+      await login(data.data, jwtToken || undefined)
       await router.push('/')
     }
   } catch (e: any) {

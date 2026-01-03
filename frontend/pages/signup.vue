@@ -168,9 +168,10 @@ const onSubmit = async () => {
     const apiUrl = config.public.apiBaseUrl
     
     // 新規登録APIを呼び出し
-    const { data, response } = await useFetch<{
+    const response = await $fetch.raw<{
       status: { code: number; message: string }
       data: User
+      errors?: Record<string, string[]>
     }>(`${apiUrl}/api/v1/auth/sign_up`, {
       method: 'POST',
       body: {
@@ -183,12 +184,13 @@ const onSubmit = async () => {
     })
 
     // JWTトークンはレスポンスヘッダーから取得
-    const authHeader = response.value?.headers.get('Authorization')
+    const authHeader = response.headers.get('Authorization')
     const jwtToken = authHeader?.replace('Bearer ', '') || null
+    const data = await response.json()
 
-    if (data.value?.status?.code === 200) {
+    if (data?.status?.code === 200) {
       success.value = true
-      await login(data.value.data, jwtToken || undefined)
+      await login(data.data, jwtToken || undefined)
       
       // 少し待ってからホームにリダイレクト
       setTimeout(async () => {
@@ -196,9 +198,31 @@ const onSubmit = async () => {
       }, 1500)
     }
   } catch (e: any) {
-    if (e.data?.errors) {
+    // エラーレスポンスを取得
+    let errorData = null
+    
+    // $fetch.rawのエラー時、dataプロパティからレスポンスを取得
+    if (e.data) {
+      errorData = e.data
+    } else if (e.response) {
+      try {
+        errorData = await e.response.json()
+      } catch {
+        try {
+          const responseText = await e.response.text()
+          errorData = JSON.parse(responseText)
+        } catch {
+          errorData = { status: { message: 'エラーが発生しました' } }
+        }
+      }
+    } else {
+      // その他のエラー
+      errorData = { status: { message: e.message || '登録に失敗しました' } }
+    }
+
+    if (errorData?.errors) {
       // Railsのエラーレスポンスを処理
-      const railsErrors = e.data.errors
+      const railsErrors = errorData.errors
       if (typeof railsErrors === 'object') {
         Object.keys(railsErrors).forEach((key) => {
           const errorMessages = railsErrors[key]
@@ -210,7 +234,7 @@ const onSubmit = async () => {
         })
       }
     } else {
-      error.value = e.data?.status?.message || '登録に失敗しました'
+      error.value = errorData?.status?.message || '登録に失敗しました'
     }
   } finally {
     loading.value = false

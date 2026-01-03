@@ -1,6 +1,7 @@
 module Api
   module V1
     class UsersController < ApplicationController
+      include Devise::Controllers::Helpers
       before_action :authenticate_user!
 
       def show
