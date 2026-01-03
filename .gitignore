@@ -70,3 +70,6 @@ postgres_data/
 .DS_Store
 Thumbs.db
 
+# Ignore debugger files
+.byebug_history
+
